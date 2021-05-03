@@ -144,11 +144,14 @@ if __name__ == '__main__':
         exit()
 
     full_input_path = sys.argv[1]
-    path = full_input_path.split('\\')
+    if '\\' in full_input_path:
+        full_input_path = full_input_path.replace('\\', '/')
+    path = full_input_path.split('/')
+
     input_text_file = path[-1]
 
     if len(path) == 1:  # no full path given, just a filename or a wildcard filename pattern
-        source_dir = os.getcwd() + '\\'  # a default source directory
+        source_dir = os.getcwd() + '/'  # a default source directory
     else:
         source_dir = full_input_path[0:(len(full_input_path) - len(input_text_file))]
 
