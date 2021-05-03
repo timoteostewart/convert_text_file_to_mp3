@@ -8,7 +8,8 @@ import time
 from random import randint
 
 # Note: this script invokes balcon.exe and ffmpeg.exe via subprocess.Popen()
-# set their paths here:
+# set their paths here
+# TODO: accept overrides to these by way of command line switches
 balcon_path = 'L:/utils/balcon/'
 balcon_executable = 'balcon.exe'
 ffmpeg_path = 'L:/utils/ffmpeg/bin/'
@@ -27,6 +28,7 @@ def tidy_up_before_we_begin(source_dir, working_dir, wav_file, output_mp3_file):
 
 def balcon_thread(source_dir, working_dir, input_text_file, wav_file):
     # balcon.exe
+    # http://www.cross-plus-a.com/bconsole.htm
     global balcon_path
     global balcon_executable
     run_balcon = subprocess.Popen(  #
@@ -71,6 +73,7 @@ def convert_txt_to_wav(source_dir, working_dir, input_text_file, wav_file):
 
 def ffmpeg_thread(working_dir, wav_file, output_mp3_file):
     # ffmpeg.exe
+    # https://ffmpeg.org/download.html
     global ffmpeg_path
     global ffmpeg_executable
     run_ffmpeg = subprocess.Popen(
@@ -134,6 +137,10 @@ def convert_single_file(source_dir, input_text_file):
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         print("Please specify input text file or wildcard pattern.")
+        print("examples:")
+        print("  python convert_txt_to_mp3.py infile.txt")
+        print("  python convert_txt_to_mp3.py *.txt")
+        print("  python convert_txt_to_mp3.py \"D:/files/*.txt\"")
         exit()
 
     full_input_path = sys.argv[1]
