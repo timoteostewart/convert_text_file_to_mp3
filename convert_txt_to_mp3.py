@@ -6,7 +6,13 @@ import sys
 import threading
 import time
 from random import randint
-from time import time
+
+# Note: this script invokes balcon.exe and ffmpeg.exe via subprocess.Popen()
+# set their paths here:
+balcon_path = 'L:/utils/balcon/'
+balcon_executable = 'balcon.exe'
+ffmpeg_path = 'L:/utils/ffmpeg/bin/'
+ffmpeg_executable = 'ffmpeg.exe'
 
 
 def tidy_up_before_we_begin(source_dir, working_dir, wav_file, output_mp3_file):
@@ -21,8 +27,8 @@ def tidy_up_before_we_begin(source_dir, working_dir, wav_file, output_mp3_file):
 
 def balcon_thread(source_dir, working_dir, input_text_file, wav_file):
     # balcon.exe
-    balcon_path = 'L:/utils/balcon/'
-    balcon_executable = 'balcon.exe'
+    global balcon_path
+    global balcon_executable
     run_balcon = subprocess.Popen(  #
         [balcon_path + balcon_executable, '-q', '-sb', '5000', '-f', source_dir + input_text_file,
          '--encoding', 'utf8', '-w', working_dir + wav_file, '-n', 'Microsoft David Desktop'],
@@ -65,8 +71,8 @@ def convert_txt_to_wav(source_dir, working_dir, input_text_file, wav_file):
 
 def ffmpeg_thread(working_dir, wav_file, output_mp3_file):
     # ffmpeg.exe
-    ffmpeg_path = 'L:/utils/ffmpeg/bin/'
-    ffmpeg_executable = 'ffmpeg.exe'
+    global ffmpeg_path
+    global ffmpeg_executable
     run_ffmpeg = subprocess.Popen(
         [ffmpeg_path + ffmpeg_executable, '-hide_banner', '-y', '-loglevel', 'warning', '-stats', '-i',
          working_dir + wav_file, '-f', 'mp3', '-ab', '192000', '-vn', working_dir + output_mp3_file],
@@ -106,7 +112,7 @@ def convert_single_file(source_dir, input_text_file):
     wav_file = input_text_file[0:-4] + '.wav'
 
     temp_dir_number = randint(1000000000, 9999999999)
-    working_dir = 'C:/temp/' + str(temp_dir_number) + '/'
+    working_dir = 'C:/temp/' + str(temp_dir_number) + '/'  # this working_dir can be customized as necessary
     if not os.path.isdir(working_dir):
         os.mkdir(working_dir)
 
@@ -134,8 +140,8 @@ if __name__ == '__main__':
     path = full_input_path.split('\\')
     input_text_file = path[-1]
 
-    if len(path) == 1:  # no full path given, just a filename or file wildcard
-        source_dir = 'L:/Dropbox/TO LISTEN/__TO CONVERT/'  # we assume this is so
+    if len(path) == 1:  # no full path given, just a filename or a wildcard filename pattern
+        source_dir = os.getcwd() + '\\'  # a default source directory
     else:
         source_dir = full_input_path[0:(len(full_input_path) - len(input_text_file))]
 
